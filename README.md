@@ -1,2 +1,10 @@
-# wxa
-wexin mini application package
+# 微信小程序
+
+### 小游戏
+* [跳一跳](./wx7c8d593b2c3a7703)
+
+### 小程序
+* [微信买单](./wxc999ec07220acf96)
+
+### 参考
+* [微信跳一跳"AI"](https://www.v2ex.com/t/419056)
