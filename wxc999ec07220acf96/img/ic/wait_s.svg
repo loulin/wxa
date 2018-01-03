@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.1 (43504) - http://www.bohemiancoding.com/sketch -->
+    <title>waiting</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="切图" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="waiting">
+            <circle id="Oval-2" stroke="#B2B2B2" stroke-width="2" cx="18" cy="18" r="17"></circle>
+            <path d="M21.5440811,15.3475171 C21.5539217,15.2402328 21.6566479,15.1532617 21.7612895,15.1532617 L22.5699866,15.1532617 C22.6801069,15.1532617 22.7767177,15.2456961 22.7848038,15.3475171 L23.7514959,27.5202208 L20.4275434,27.5202208 L21.5440811,15.3475171 Z" id="Rectangle-7" fill="#B2B2B2" transform="translate(22.089520, 21.336741) rotate(-237.000000) translate(-22.089520, -21.336741) "></path>
+            <path d="M17.1165377,7.1942554 C17.1263783,7.0869711 17.2291045,7 17.3337461,7 L18.1424432,7 C18.2525635,7 18.3491742,7.0924344 18.3572603,7.1942554 L19.3239524,19.3669591 L16,19.3669591 L17.1165377,7.1942554 Z" id="Rectangle-7-Copy" fill="#B2B2B2" transform="translate(17.661976, 13.183480) rotate(-360.000000) translate(-17.661976, -13.183480) "></path>
+        </g>
+    </g>
+</svg>

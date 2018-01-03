@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 45.2 (43514) - http://www.bohemiancoding.com/sketch -->
+    <title>close_press</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="切图" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="close_press" fill="#777777">
+            <g id="关闭" transform="translate(24.497475, 23.790368) rotate(-315.000000) translate(-24.497475, -23.790368) translate(-3.502525, -4.209632)">
+                <path d="M25,25 L1.77635684e-13,25 L1.77635684e-13,31 L25,31 L25,56 L31,56 L31,31 L56,31 L56,25 L31,25 L31,1.42108547e-14 L25,1.31086726e-14 L25,25 Z" id="Rectangle-14"></path>
+            </g>
+        </g>
+    </g>
+</svg>
