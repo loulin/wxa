@@ -567,7 +567,7 @@ var q1=new Quaternion();return function rotateOnAxis(axis,angle){q1.setFromAxisA
 var q1=new Quaternion();return function rotateOnWorldAxis(axis,angle){q1.setFromAxisAngle(axis,angle);this.quaternion.premultiply(q1);return this;};}(),rotateX:function(){var v1=new Vector3(1,0,0);return function rotateX(angle){return this.rotateOnAxis(v1,angle);};}(),rotateY:function(){var v1=new Vector3(0,1,0);return function rotateY(angle){return this.rotateOnAxis(v1,angle);};}(),rotateZ:function(){var v1=new Vector3(0,0,1);return function rotateZ(angle){return this.rotateOnAxis(v1,angle);};}(),translateOnAxis:function(){// translate object by distance along axis in object space
 // axis is assumed to be normalized
 var v1=new Vector3();return function translateOnAxis(axis,distance){v1.copy(axis).applyQuaternion(this.quaternion);this.position.add(v1.multiplyScalar(distance));return this;};}(),translateX:function(){var v1=new Vector3(1,0,0);return function translateX(distance){return this.translateOnAxis(v1,distance);};}(),translateY:function(){var v1=new Vector3(0,1,0);return function translateY(distance){return this.translateOnAxis(v1,distance);};}(),translateZ:function(){var v1=new Vector3(0,0,1);return function translateZ(distance){return this.translateOnAxis(v1,distance);};}(),localToWorld:function localToWorld(vector){return vector.applyMatrix4(this.matrixWorld);},worldToLocal:function(){var m1=new Matrix4();return function worldToLocal(vector){return vector.applyMatrix4(m1.getInverse(this.matrixWorld));};}(),lookAt:function(){// This method does not support objects with rotated and/or translated parent(s)
-var m1=new Matrix4();var vector=new Vector3();return function lookAt(x,y,z){if(x.isVector3){vector.copy(x);}else{vector.set(x,y,z);}if(this.isCamera){m1.lookAt(this.position,vector,this.up);}else{m1.lookAt(vector,this.position,this.up);}this.quaternion.setFromRotationMatrix(m1);};}(),add:function add(object){if(arguments.length>1){for(var i=0;i<arguments.length;i++){this.add(arguments[i]);}return this;}if(object===this){console.error("THREE.Object3D.add: object can't be added as a child of itself.",object);return this;}if(object&&object.isObject3D){if(object.parent!==null){object.parent.remove(object);}object.parent=this;object.dispatchEvent({type:'added'});this.children.push(object);}else{console.error("THREE.Object3D.add: object not an instance of THREE.Object3D.",object);}return this;},remove:function remove(object){if(arguments.length>1){for(var i=0;i<arguments.length;i++){this.remove(arguments[i]);}return this;}var index=this.children.indexOf(object);if(index!==-1){object.parent=null;object.dispatchEvent({type:'removed'});this.children.splice(index,1);}return this;},getObjectById:function getObjectById(id){return this.getObjectByProperty('id',id);},getObjectByName:function getObjectByName(name){return this.getObjectByProperty('name',name);},getObjectByProperty:function getObjectByProperty(name,value){if(this[name]===value)return this;for(var i=0,l=this.children.length;i<l;i++){var child=this.children[i];var object=child.getObjectByProperty(name,value);if(object!==undefined){return object;}}return undefined;},getWorldPosition:function getWorldPosition(optionalTarget){var result=optionalTarget||new Vector3();this.updateMatrixWorld(true);return result.setFromMatrixPosition(this.matrixWorld);},getWorldQuaternion:function(){var position=new Vector3();var scale=new Vector3();return function getWorldQuaternion(optionalTarget){var result=optionalTarget||new Quaternion();this.updateMatrixWorld(true);this.matrixWorld.decompose(position,result,scale);return result;};}(),getWorldRotation:function(){var quaternion=new Quaternion();return function getWorldRotation(optionalTarget){var result=optionalTarget||new Euler();this.getWorldQuaternion(quaternion);return result.setFromQuaternion(quaternion,this.rotation.order,false);};}(),getWorldScale:function(){var position=new Vector3();var quaternion=new Quaternion();return function getWorldScale(optionalTarget){var result=optionalTarget||new Vector3();this.updateMatrixWorld(true);this.matrixWorld.decompose(position,quaternion,result);return result;};}(),getWorldDirection:function(){var quaternion=new Quaternion();return function getWorldDirection(optionalTarget){var result=optionalTarget||new Vector3();this.getWorldQuaternion(quaternion);return result.set(0,0,1).applyQuaternion(quaternion);};}(),raycast:function raycast(){},traverse:function traverse(callback){callback(this);var children=this.children;for(var i=0,l=children.length;i<l;i++){children[i].traverse(callback);}},traverseVisible:function traverseVisible(callback){if(this.visible===false)return;callback(this);var children=this.children;for(var i=0,l=children.length;i<l;i++){children[i].traverseVisible(callback);}},traverseAncestors:function traverseAncestors(callback){var parent=this.parent;if(parent!==null){callback(parent);parent.traverseAncestors(callback);}},updateMatrix:function updateMatrix(){this.matrix.compose(this.position,this.quaternion,this.scale);this.matrixWorldNeedsUpdate=true;},updateMatrixWorld:function updateMatrixWorld(force){if(this.matrixAutoUpdate)this.updateMatrix();if(this.matrixWorldNeedsUpdate||force){if(this.parent===null){this.matrixWorld.copy(this.matrix);}else{this.matrixWorld.multiplyMatrices(this.parent.matrixWorld,this.matrix);}this.matrixWorldNeedsUpdate=false;force=true;}// update children
+var m1=new Matrix4();var vector=new Vector3();return function lookAt(x,y,z){if(x.isVector3){vector.copy(x);}else{vector.set(x,y,z);}if(this.isCamera){m1.lookAt(this.position,vector,this.up);}else{m1.lookAt(vector,this.position,this.up);}this.quaternion.setFromRotationMatrix(m1);};}(),add:function add(object){if(object&&object.parent==this){return this;}if(arguments.length>1){for(var i=0;i<arguments.length;i++){this.add(arguments[i]);}return this;}if(object===this){console.error("THREE.Object3D.add: object can't be added as a child of itself.",object);return this;}if(object&&object.isObject3D){if(object.parent!==null){object.parent.remove(object);}object.parent=this;object.dispatchEvent({type:'added'});this.children.push(object);}else{console.error("THREE.Object3D.add: object not an instance of THREE.Object3D.",object);}return this;},remove:function remove(object){if(arguments.length>1){for(var i=0;i<arguments.length;i++){this.remove(arguments[i]);}return this;}var index=this.children.indexOf(object);if(index!==-1){object.parent=null;object.dispatchEvent({type:'removed'});this.children.splice(index,1);}return this;},getObjectById:function getObjectById(id){return this.getObjectByProperty('id',id);},getObjectByName:function getObjectByName(name){return this.getObjectByProperty('name',name);},getObjectByProperty:function getObjectByProperty(name,value){if(this[name]===value)return this;for(var i=0,l=this.children.length;i<l;i++){var child=this.children[i];var object=child.getObjectByProperty(name,value);if(object!==undefined){return object;}}return undefined;},getWorldPosition:function getWorldPosition(optionalTarget){var result=optionalTarget||new Vector3();this.updateMatrixWorld(true);return result.setFromMatrixPosition(this.matrixWorld);},getWorldQuaternion:function(){var position=new Vector3();var scale=new Vector3();return function getWorldQuaternion(optionalTarget){var result=optionalTarget||new Quaternion();this.updateMatrixWorld(true);this.matrixWorld.decompose(position,result,scale);return result;};}(),getWorldRotation:function(){var quaternion=new Quaternion();return function getWorldRotation(optionalTarget){var result=optionalTarget||new Euler();this.getWorldQuaternion(quaternion);return result.setFromQuaternion(quaternion,this.rotation.order,false);};}(),getWorldScale:function(){var position=new Vector3();var quaternion=new Quaternion();return function getWorldScale(optionalTarget){var result=optionalTarget||new Vector3();this.updateMatrixWorld(true);this.matrixWorld.decompose(position,quaternion,result);return result;};}(),getWorldDirection:function(){var quaternion=new Quaternion();return function getWorldDirection(optionalTarget){var result=optionalTarget||new Vector3();this.getWorldQuaternion(quaternion);return result.set(0,0,1).applyQuaternion(quaternion);};}(),raycast:function raycast(){},traverse:function traverse(callback){callback(this);var children=this.children;for(var i=0,l=children.length;i<l;i++){children[i].traverse(callback);}},traverseVisible:function traverseVisible(callback){if(this.visible===false)return;callback(this);var children=this.children;for(var i=0,l=children.length;i<l;i++){children[i].traverseVisible(callback);}},traverseAncestors:function traverseAncestors(callback){var parent=this.parent;if(parent!==null){callback(parent);parent.traverseAncestors(callback);}},updateMatrix:function updateMatrix(){this.matrix.compose(this.position,this.quaternion,this.scale);this.matrixWorldNeedsUpdate=true;},updateMatrixWorld:function updateMatrixWorld(force){if(this.matrixAutoUpdate)this.updateMatrix();if(this.matrixWorldNeedsUpdate||force){if(this.parent===null){this.matrixWorld.copy(this.matrix);}else{this.matrixWorld.multiplyMatrices(this.parent.matrixWorld,this.matrix);}this.matrixWorldNeedsUpdate=false;force=true;}// update children
 var children=this.children;for(var i=0,l=children.length;i<l;i++){children[i].updateMatrixWorld(force);}},toJSON:function toJSON(meta){// meta is a string when called from JSON.stringify
 var isRootObject=meta===undefined||typeof meta==='string';var output={};// meta is a hash used to collect geometries, materials.
 // not providing it implies that this is the root object
@@ -2964,13 +2964,14 @@ var GAME = exports.GAME = {
 	topTrackZ: -30,
 	rightBound: 90,
 	HEIGHT: window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth,
-	WIDTH: window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth
+	WIDTH: window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth,
+	canShadow: true
 };
 
 var WAVE = exports.WAVE = {
 	innerRadius: 2.2,
 	outerRadius: 3,
-	thetaSeg: 30
+	thetaSeg: 25
 };
 
 var CAMERA = exports.CAMERA = {
@@ -4584,8 +4585,9 @@ var Text = function () {
 		this.material = new THREE.MeshBasicMaterial({ color: options.fillStyle || 0xffffff, transparent: true });
 		this.options = options || {};
 		this.obj = new THREE.Object3D();
+		this.obj.name = 'text';
 		if (options.chinese) {
-			var chinese = new THREE.Mesh(new THREE.TextGeometry(text, { 'font': _font2.default, 'size': 1.0, 'height': 0.1 }), this.material);
+			var chinese = new THREE.Mesh(new THREE.TextBufferGeometry(text, { 'font': _font2.default, 'size': 1.0, 'height': 0.1 }), this.material);
 			this.obj.add(chinese);
 			if (options.textAlign == 'center') chinese.position.x = text.length * 1.1 / -2;
 			// var chinese = new THREE.Mesh(new THREE.TextGeometry(text, { 'font': FONT, 'size': 1.0, 'height': 0.1 }), this.material);
@@ -4593,11 +4595,11 @@ var Text = function () {
 			// if (options.textAlign == 'center') chinese.position.x = text.length * 1.1 / -2; 
 		} else {
 			this.scores = [];
-			this.plus = new THREE.Mesh(new THREE.TextGeometry('+', { 'font': _font2.default, 'size': 3.0, 'height': 0.1 }), this.material);
-			var amount = this.options.sumScore ? 4 : 2;
+			this.plus = new THREE.Mesh(new THREE.TextBufferGeometry('+', { 'font': _font2.default, 'size': 3.0, 'height': 0.1 }), this.material);
+			var amount = this.options.sumScore ? 5 : 2;
 			for (var i = 0; i < 10; ++i) {
 				var duplicateArr = [];
-				var geometry = new THREE.TextGeometry(i, { 'font': _font2.default, 'size': 3.0, 'height': 0.1 });
+				var geometry = new THREE.TextBufferGeometry(i, { 'font': _font2.default, 'size': 3.0, 'height': 0.1 });
 				for (var j = 0; j < amount; ++j) {
 					var score = new THREE.Mesh(geometry, this.material);
 					score.using = false;
@@ -4615,7 +4617,7 @@ var Text = function () {
 			var perWidth = 2.5;
 			score = score.toString();
 			var lengthSum = score.length * perWidth;
-			var amount = this.options.sumScore ? 4 : 2;
+			var amount = this.options.sumScore ? 5 : 2;
 			var sum = this.options.textAlign == 'center' ? -lengthSum / 2 : 0;
 			if (this.options.plusScore) {
 				sum = -(lengthSum + perWidth) / 2;
@@ -4648,6 +4650,7 @@ var Text = function () {
 		key: 'changeStyle',
 		value: function changeStyle(obj) {
 			Object.assign(this.options, obj);
+			this.obj.updateMatrix();
 		}
 	}]);
 
@@ -4768,9 +4771,7 @@ var singleCtrl = function () {
   }, {
     key: 'clickStart',
     value: function clickStart() {
-      if (this.currentPage) {
-        this.currentPage.hide();
-      }
+      this.hideCurrentPage();
       this.gamePage.show();
       this.game.replayGame();
       this.model.setStage(this.gamePage.name);
@@ -4779,9 +4780,7 @@ var singleCtrl = function () {
   }, {
     key: 'showGameOverPage',
     value: function showGameOverPage() {
-      if (this.currentPage) {
-        this.currentPage.hide();
-      }
+      this.hideCurrentPage();
       this.gameOverPage.show();
 
       // 清空上次留存的pkId
@@ -4798,7 +4797,7 @@ var singleCtrl = function () {
     key: 'showFriendRank',
     value: function showFriendRank() {
       this.lastPage = this.currentPage;
-      this.currentPage.hide();
+      this.hideCurrentPage();
       this.friendRankPage.show();
       this.model.setStage(this.friendRankPage.name);
       this.currentPage = this.friendRankPage;
@@ -4806,12 +4805,12 @@ var singleCtrl = function () {
   }, {
     key: 'friendRankReturn',
     value: function friendRankReturn() {
-      this.currentPage.hide();
+      this.hideCurrentPage();
       this.lastPage.show();
 
       this.model.setStage(this.lastPage.name);
       this.currentPage = this.lastPage;
-      this.lastPage = null;
+      // this.lastPage = null
     }
   }, {
     key: 'shareGroupRank',
@@ -4986,9 +4985,7 @@ var singleCtrl = function () {
   }, {
     key: 'destroy',
     value: function destroy() {
-      if (this.currentPage) {
-        this.currentPage.hide();
-      }
+      this.hideCurrentPage();
       this.currentPage = null;
 
       // 清理gameId，gameTicket
@@ -4999,6 +4996,13 @@ var singleCtrl = function () {
       this.clearSocketTimeout();
 
       this.game.resetScene();
+    }
+  }, {
+    key: 'hideCurrentPage',
+    value: function hideCurrentPage() {
+      if (this.currentPage) {
+        this.currentPage.hide();
+      }
     }
   }]);
 
@@ -5190,17 +5194,19 @@ var colors = {
 	white: 0xeeeeee,
 	lightGreen: 0x7ba980,
 	gray: 0x9e9e9e,
-	black: 0x5d5d5d,
+	black: 0x6d6d6d,
 	lightGray: 0xdbdbdb,
-	lightBlack: 0xaaaaaa,
+	lightBlack: 0xcbcbcb,
 	brown: 0x676767,
 	middleLightGreen: 0x774a379,
 	middleLightGray: 0xbbbbbb,
-	middleLightBlack: 0x666666
+	middleLightBlack: 0x888888
 };
 
 var biggerGeometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2 + 0.02, _config.BLOCK.height + 0.04, _config.BLOCK.radius * 2 + 0.02);
 var staticGeometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2, _config.BLOCK.height, _config.BLOCK.radius * 2);
+var shadowGeometry = new THREE.PlaneGeometry(11, 11);
+var customMaterial = _config.GAME.canShadow ? THREE.MeshLambertMaterial : THREE.MeshBasicMaterial;
 
 var Block = function () {
 	function Block(type, number) {
@@ -5225,21 +5231,22 @@ var Block = function () {
 		//if (this.radiusSegments === 4) this.obj.rotation.y = Math.PI / 4;
 		//this.obj.scale.set(this.radiusScale, 1, this.radiusScale);
 		this.obj = new THREE.Object3D();
+		this.obj.name = 'block';
 		this.body = new THREE.Object3D();
 		this.greenMaterial = new THREE.MeshLambertMaterial({ color: colors.green });
 		this.whiteMaterial = new THREE.MeshLambertMaterial({ color: colors.white });
 		this.shadowWidth = 11;
 		if (type == 2 || type == 7) {
-			this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(this.shadowWidth, this.shadowWidth), _config.desk_shadow);
+			this.shadow = new THREE.Mesh(shadowGeometry, _config.desk_shadow);
 			this.shadow.position.set(0, -_config.BLOCK.height / 2 - 0.001 * type, -4.5);
 			this.shadow.scale.y = 1.2;
 		} else if (type == 3 || type == 21 || type == 27 || type == 28 || type == 29 || type == 31) {
-			this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(this.shadowWidth, this.shadowWidth), _config.cylinder_shadow);
-			this.shadow.position.set(0, -_config.BLOCK.height / 2 - 0.001 * type, -2.8);
+			this.shadow = new THREE.Mesh(shadowGeometry, _config.cylinder_shadow);
+			this.shadow.position.set(-0.1, -_config.BLOCK.height / 2 - 0.001 * type, -2.8);
 			this.shadow.scale.y = 1.4;
 			this.shadow.scale.x = 1;
 		} else {
-			this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(this.shadowWidth, this.shadowWidth), _config.shadow);
+			this.shadow = new THREE.Mesh(shadowGeometry, _config.shadow);
 			this.shadow.position.set(-0.74, -_config.BLOCK.height / 2 - 0.001 * type, -2.73);
 			this.shadow.scale.y = 1.4;
 		}
@@ -5407,9 +5414,8 @@ var Block = function () {
 			var earGeometry = new THREE.BoxGeometry(3, 2, 4);
 			this.geometry = geometry;
 			var greenMaterial = new THREE.MeshLambertMaterial({ color: 0xf2f2f2 });
-			var planeMaterial = new THREE.MeshBasicMaterial({
-				map: _config.loader.load('res/white_face.png'),
-				transparent: true
+			var planeMaterial = new THREE.MeshLambertMaterial({
+				map: _config.loader.load('res/white_face.png')
 			});
 			var planeGeometry = new THREE.PlaneGeometry(6, 3);
 			var materials = [greenMaterial, planeMaterial];
@@ -5438,7 +5444,8 @@ var Block = function () {
 			this.hitObj = new THREE.Mesh(totalGeometry, materials);
 		} else if (type == 14) {
 			var geometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2, this.height, _config.BLOCK.radius * 2);
-			var material = new THREE.MeshBasicMaterial({
+			this.geometry = geometry;
+			var material = new THREE.MeshLambertMaterial({
 				map: _config.loader.load('res/tit.png')
 			});
 			this.mapUv(310, 310, geometry, 1, 0, 0, 200, 110);
@@ -5446,6 +5453,14 @@ var Block = function () {
 			this.mapUv(310, 310, geometry, 4, 200, 110, 310, 310); //right
 
 			this.hitObj = new THREE.Mesh(geometry, material);
+
+			// var materials = [material,  new THREE.ShadowMaterial({ transparent: true, color: 0x000000, opacity: 0.3, })];
+			// var totalGeometry = new THREE.Geometry();
+			// this.merge(totalGeometry, geometry, 0, [{ x: 0, y: 0, z: 0 }]);
+			// var planeGeometry = new THREE.PlaneGeometry(BLOCK.radius * 2, BLOCK.radius * 2);
+			// planeGeometry.rotateX(-Math.PI / 2);
+			// this.merge(totalGeometry, planeGeometry, 1, [{ x: 0, y: BLOCK.height / 2 + 0.1, z: 0 }]);
+			// this.hitObj = new THREE.Mesh(totalGeometry, materials);
 		} else if (type == 15) {
 			var geometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2, this.height, _config.BLOCK.radius * 2);
 			this.map = _config.loader.load('res/bag.png');
@@ -5514,20 +5529,20 @@ var Block = function () {
 				opacity: 0.3
 			});
 			var bottomGeometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2.05, _config.BLOCK.height / 21 * 17, _config.BLOCK.radius * 2.05);
-			var bottomMaterial = new THREE.MeshLambertMaterial({
+			var bottomMaterial = new THREE.MeshBasicMaterial({
 				map: _config.loader.load('res/sing.png')
 			});
 			var materials = [material, bottomMaterial];
 			var totalGeometry = new THREE.Geometry();
-			this.mapUv(256, 416, bottomGeometry, 1, 0, 0, 256, 160);
-			this.mapUv(256, 416, bottomGeometry, 2, 0, 160, 256, 416); //top
-			this.mapUv(256, 416, bottomGeometry, 4, 0, 0, 256, 160, true); //right
+			this.mapUv(416, 416, bottomGeometry, 1, 0, 0, 256, 160);
+			this.mapUv(416, 416, bottomGeometry, 2, 0, 160, 256, 416); //top
+			this.mapUv(416, 416, bottomGeometry, 4, 256, 160, 416, 416); //right
 			this.merge(totalGeometry, geometry, 0, [{ x: 0, y: 0, z: 0 }]);
 			this.merge(totalGeometry, bottomGeometry, 1, [{ x: 0, y: -_config.BLOCK.height / 21 * 10.5, z: 0 }]);
 			this.hitObj = new THREE.Mesh(totalGeometry, materials);
 			this.record = new THREE.Object3D();
 
-			this.record.add(new THREE.Mesh(new THREE.CylinderGeometry(_config.BLOCK.radius * 0.9, _config.BLOCK.radius * 0.9, 0.4, 50), new THREE.MeshLambertMaterial({ color: 0x2c2c2c })));
+			this.record.add(new THREE.Mesh(new THREE.CylinderGeometry(_config.BLOCK.radius * 0.9, _config.BLOCK.radius * 0.9, 0.4, 50), new THREE.MeshBasicMaterial({ color: 0x2c2c2c })));
 			var planeGeometry = new THREE.CircleGeometry(_config.BLOCK.radius * 0.9, 40);
 			var planeMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/record.png') });
 			var plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -5572,6 +5587,8 @@ var Block = function () {
 			this.hitObj = new THREE.Mesh(totalGeometry, materials);
 			this.plane = new THREE.Mesh(planeGeometry, new THREE.MeshBasicMaterial({ map: _config.loader.load('res/disk_light.png'), transparent: true }));
 			this.plane.position.set(3.5, 0.5, _config.BLOCK.radius / 38 * 48 + 0.03);
+			this.plane.updateMatrix();
+			this.plane.matrixAutoUpdate = false;
 			this.body.add(this.plane);
 			this.timer = setInterval(function () {
 				_this.plane.visible = !_this.plane.visible;
@@ -5584,8 +5601,8 @@ var Block = function () {
 			this.geometry = geometry;
 			var planeGeometry = new THREE.CircleGeometry(_config.BLOCK.radius * 0.7, 50);
 			var bottomGeometry = new THREE.CylinderGeometry(_config.BLOCK.radius * 0.7, _config.BLOCK.radius * 0.5, _config.BLOCK.height / 21 * 17, 50);
-			var material = new THREE.MeshLambertMaterial({ color: 0x4d4d4d });
-			var planeMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/westore_desk.png') });
+			var material = new THREE.MeshBasicMaterial({ color: 0x4d4d4d });
+			var planeMaterial = new THREE.MeshLambertMaterial({ map: _config.loader.load('res/westore_desk.png') });
 			var bottomMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/westore.png') });
 			this.shadow.scale.set(0.55, 0.9, 0.7);
 			var materials = [material, bottomMaterial, planeMaterial];
@@ -5624,11 +5641,15 @@ var Block = function () {
 			this.shadow.scale.set(1, 48 / 38, 48 / 38);
 			var legGeometry = new THREE.BoxGeometry(1.5, 3.5, 1.5);
 			legGeometry.rotateZ(-0.3);
+			legGeometry.vertices[7].y -= 0.4;
+			legGeometry.vertices[6].y -= 0.4;
 			legGeometry.translate(-4, -3, -3.5);
 			geometry.merge(legGeometry);
+			legGeometry.vertices[6].y += 0.5;
 			legGeometry.translate(0, 0, 7);
 			legGeometry.rotateX(-0.2);
 			geometry.merge(legGeometry);
+			legGeometry.vertices[7].y += 0.4;
 			legGeometry.translate(5, -1, 0);
 			legGeometry.rotateZ(0.4);
 			geometry.merge(legGeometry);
@@ -5636,13 +5657,18 @@ var Block = function () {
 				map: _config.loader.load('res/stool.png')
 			});
 			this.hitObj = new THREE.Mesh(geometry, material);
+			this.shadow = new THREE.Mesh(new THREE.PlaneGeometry(this.shadowWidth, this.shadowWidth), new THREE.MeshBasicMaterial({ map: _config.loader.load('res/stool_shadow.png'), transparent: true, alphaTest: 0.01 }));
+			this.shadow.position.set(-0.76, -_config.BLOCK.height / 2 - 0.001 * type, -3.6);
+			this.shadow.scale.y = 1.4;
+			this.shadow.scale.x = 0.9;
+			this.shadow.rotation.x = -Math.PI / 2;
 		} else if (type == 24) {
 			this.height = _config.BLOCK.height / 21 * 6;
 			var geometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2 / 38 * 45, this.height, _config.BLOCK.radius * 2 / 38 * 45);
 			this.geometry = geometry;
 			var bottomGeometry = new THREE.BoxGeometry(_config.BLOCK.radius * 2 / 38 * 40, _config.BLOCK.height / 21 * 15, _config.BLOCK.radius * 2 / 38 * 40);
 			this.shadow.scale.set(40 / 38, 1.4, 1);
-			var material = new THREE.MeshBasicMaterial({
+			var material = new THREE.MeshLambertMaterial({
 				map: _config.loader.load('res/store_top.png')
 			});
 			var bottomMaterial = new THREE.MeshBasicMaterial({
@@ -5739,20 +5765,23 @@ var Block = function () {
 			var geometry = new THREE.CylinderGeometry(_config.BLOCK.radius * 2 / 38 * 25, _config.BLOCK.radius * 2 / 38 * 25, this.height, 50, 50);
 			this.geometry = geometry;
 			this.shadow.scale.set(50 / 38, 50 / 38, 50 / 38);
-			var material = new THREE.MeshLambertMaterial({
+			var material = new THREE.MeshBasicMaterial({
 				map: _config.loader.load('res/golf_bottom.png')
 			});
-			var planeGeometry = new THREE.CircleGeometry(_config.BLOCK.radius * 2 / 38 * 25 + 0.02, 50);
-			var planeMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/golf_top.png') });
+			var planeGeometry = new THREE.CircleGeometry(_config.BLOCK.radius * 2 / 38 * 25 + 0.01, 30);
+			var planeMaterial = new customMaterial({ map: _config.loader.load('res/golf_top.png') });
 			var totalGeometry = new THREE.Geometry();
 			var materials = [material, planeMaterial];
+			geometry.rotateY(3);
 			this.merge(totalGeometry, geometry, 0, [{ x: 0, y: 0, z: 0 }]);
 			planeGeometry.rotateX(-Math.PI / 2);
 			planeGeometry.rotateY(-0.7);
 			this.merge(totalGeometry, planeGeometry, 1, [{ x: 0, y: this.height / 2 + 0.01, z: 0 }]);
 			this.hitObj = new THREE.Mesh(totalGeometry, materials);
-			this.sphere = new THREE.Mesh(new THREE.SphereGeometry(0.8, 15, 15), this.whiteMaterial);
+			this.sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.6, 10, 10), this.whiteMaterial);
 			this.sphere.position.set(-8, -1, -1.5);
+			this.sphere.updateMatrix();
+			this.sphere.matrixAutoUpdate = false;
 			this.obj.add(this.sphere);
 		} else if (type == 28) {
 			this.radiusSegments = 50;
@@ -5762,8 +5791,8 @@ var Block = function () {
 			var material = new THREE.MeshBasicMaterial({
 				map: _config.loader.load('res/paper_bottom.png')
 			});
-			var planeGeometry = new THREE.CircleGeometry(_config.BLOCK.radius * 2 / 38 * 15 + 0.1, 50);
-			var planeMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/paper_top.png') });
+			var planeGeometry = new THREE.CircleGeometry(_config.BLOCK.radius * 2 / 38 * 15 + 0.01, 30);
+			var planeMaterial = new customMaterial({ map: _config.loader.load('res/paper_top.png') });
 			var totalGeometry = new THREE.Geometry();
 			var materials = [material, planeMaterial];
 			geometry.rotateY(4);
@@ -5771,6 +5800,7 @@ var Block = function () {
 			planeGeometry.rotateX(-Math.PI / 2);
 			planeGeometry.rotateY(-0.7);
 			this.merge(totalGeometry, planeGeometry, 1, [{ x: 0, y: this.height / 2 + 0.01, z: 0 }]);
+			this.shadow.scale.y = 1.1;
 			this.hitObj = new THREE.Mesh(totalGeometry, materials);
 		} else if (type == 29) {
 			this.radiusSegments = 50;
@@ -5780,7 +5810,7 @@ var Block = function () {
 			this.geometry = geometry;
 			var material = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/stripe.png') });
 			var planeGeometry = new THREE.CircleGeometry(_config.BLOCK.radius * 0.4, 50);
-			var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
+			var planeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 			var middleGeometry = new THREE.CylinderGeometry(_config.BLOCK.radius * 0.4, _config.BLOCK.radius * 0.5, _config.BLOCK.height / 21 * 1, 50);
 			var bottomGeometry = new THREE.CylinderGeometry(_config.BLOCK.radius * 0.5, _config.BLOCK.radius * 0.5, _config.BLOCK.height / 21 * 16, 50);
 			var bottomMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/medicine.png') });
@@ -5893,7 +5923,9 @@ var Block = function () {
 		// }
 		this.shadow.initZ = this.shadow.position.z;
 		this.hitObj.receiveShadow = true;
+		this.hitObj.name = 'hitObj';
 		this.body.add(this.hitObj);
+		this.hitObj.matrixAutoUpdate = false;
 		this.shadow.initScale = this.shadow.scale.y;
 		this.body.position.y = _config.BLOCK.height / 2 - this.height / 2;
 		this.obj.add(this.shadow);
@@ -6012,6 +6044,7 @@ var Block = function () {
 				this.obj.scale.set(this.radiusScale, 1, this.radiusScale);
 				if (this.order == 27) {
 					this.sphere.scale.set(1 / this.radiusScale, 1, 1 / this.radiusScale);
+					this.sphere.updateMatrix();
 				}
 				//this.plane.scale.z = this.radiusScale;
 				return;
@@ -6235,6 +6268,7 @@ var Bottle = function () {
 		_classCallCheck(this, Bottle);
 
 		this.obj = new THREE.Object3D();
+		this.obj.name = 'bottle';
 		this.trail = null;
 
 		this.bottle = new THREE.Object3D();
@@ -6242,28 +6276,29 @@ var Bottle = function () {
 
 		var headRadius = 2.1 * 0.45;
 		this.human = new THREE.Object3D();
-		this.head = new THREE.Mesh(new THREE.SphereGeometry(headRadius, 20, 20), basicMaterial);
+		this.head = new THREE.Mesh(new THREE.SphereBufferGeometry(headRadius, 20, 20), basicMaterial);
 		// this.head.rotation.y = 3.4;
 		// this.head.rotation.x = -1;
 		// window.hhh = this.head;
 		this.head.castShadow = true;
-		this.bottom = new THREE.Mesh(new THREE.CylinderGeometry(0.88 * headRadius, 1.27 * headRadius, 2.68 * headRadius, 20), new THREE.MeshBasicMaterial({ map: _config.loader.load('res/bottom.png') }));
+		this.bottom = new THREE.Mesh(new THREE.CylinderBufferGeometry(0.88 * headRadius, 1.27 * headRadius, 2.68 * headRadius, 20), new THREE.MeshBasicMaterial({ map: _config.loader.load('res/bottom.png') }));
 		this.bottom.rotation.y = 4.7;
 		this.bottom.castShadow = true;
-		this.middle = new THREE.Mesh(new THREE.CylinderGeometry(headRadius, 0.88 * headRadius, 1.2 * headRadius, 20), new THREE.MeshBasicMaterial({ map: _config.loader.load('res/top.png') }));
+		var middleGeometry = new THREE.CylinderGeometry(headRadius, 0.88 * headRadius, 1.2 * headRadius, 20);
+		var middleMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/top.png') });
+		var materials = [middleMaterial, basicMaterial];
+		var totalGeometry = new THREE.Geometry();
+		middleGeometry.rotateY(4.7);
+		this.merge(totalGeometry, middleGeometry, 0, [{ x: 0, y: this.bottom.position.y + 1.94 * headRadius, z: 0 }]);
+		var topGeometry = new THREE.SphereGeometry(headRadius, 20, 20);
+		topGeometry.scale(1, 0.54, 1);
+		this.merge(totalGeometry, topGeometry, 1, [{ x: 0, y: this.bottom.position.y + 2.54 * headRadius, z: 0 }]);
+		this.middle = new THREE.Mesh(totalGeometry, materials);
 		this.middle.castShadow = true;
-		this.middle.position.y = this.bottom.position.y + 1.94 * headRadius;
-		this.middle.rotation.y = 4.7;
-		window.hhh = this.middle;
-		this.top = new THREE.Mesh(new THREE.SphereGeometry(headRadius, 20, 20), basicMaterial);
-		this.top.scale.y = 0.54;
 		// this.top.rotation.y = 3.4;
 		// this.top.rotation.x = -1;
-		this.top.position.y = this.middle.position.y + 0.6 * headRadius;
 		this.body = new THREE.Object3D();
 		this.body.add(this.bottom);
-		this.body.add(this.top);
-		window.position = this.middle.position;
 		this.body.add(this.middle);
 		this.human.add(this.body);
 		this.head.position.y = 4.725;
@@ -6288,7 +6323,7 @@ var Bottle = function () {
 		this.particles = [];
 		var whiteParticleMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/white.png'), alphaTest: 0.5 });
 		var greenParticleMaterial = new THREE.MeshBasicMaterial({ map: _config.loader.load('res/green.png'), alphaTest: 0.5 });
-		var particleGeometry = new THREE.PlaneGeometry(1, 1);
+		var particleGeometry = new THREE.PlaneBufferGeometry(1, 1);
 		for (var i = 0; i < 15; ++i) {
 			var particle = new THREE.Mesh(particleGeometry, whiteParticleMaterial);
 			particle.rotation.y = -Math.PI / 4;
@@ -6306,13 +6341,26 @@ var Bottle = function () {
 			this.obj.add(particle);
 		}
 		this.scoreText = new _text2.default('0', { fillStyle: 0x252525, textAlign: 'center', plusScore: true });
-		this.scoreText.material.opacity = 0;
+		this.scoreText.obj.visible = false;
 		this.scoreText.obj.rotation.y = -Math.PI / 4;
 		this.scoreText.obj.scale.set(0.5, 0.5, 0.5);
 		this.obj.add(this.scoreText.obj);
 	}
 
 	_createClass(Bottle, [{
+		key: 'merge',
+		value: function merge(totalGeometry, geometry, index, positions) {
+			for (var i = 0, len = geometry.faces.length; i < len; ++i) {
+				geometry.faces[i].materialIndex = 0;
+			}
+			var mesh = new THREE.Mesh(geometry);
+			for (var i = 0, len = positions.length; i < len; ++i) {
+				mesh.position.set(positions[i].x, positions[i].y, positions[i].z);
+				mesh.updateMatrix();
+				totalGeometry.merge(mesh.geometry, mesh.matrix, index);
+			}
+		}
+	}, {
 		key: 'showAddScore',
 		value: function showAddScore(score, double, quick) {
 			if (double) {
@@ -6516,7 +6564,7 @@ var Bottle = function () {
 			this.stop();
 			setTimeout(function () {
 				_this2.status = 'fall';
-				(0, _animation.TweenAnimation)(_this2.obj.position.y, -_config.BLOCK.height / 2, 400, function (value) {
+				(0, _animation.TweenAnimation)(_this2.obj.position.y, -_config.BLOCK.height / 2 - 0.3, 400, function (value) {
 					this.obj.position.y = value;
 				}.bind(_this2));
 			}, 0);
@@ -6728,6 +6776,8 @@ var Bottle = function () {
 	}, {
 		key: 'jump',
 		value: function jump(axis) {
+			var _this5 = this;
+
 			this.resetParticles();
 			this.status = 'jump';
 			this.axis = axis;
@@ -6772,8 +6822,13 @@ var Bottle = function () {
 
 			var scale = Math.min(Math.max(this.velocity.vz / 35, 1.2), 1.4);
 			if (this.direction === 'straight') {
-				_animation.customAnimation.to(this.human.rotation, 0.12, { z: this.human.rotation.z - Math.PI });
-				_animation.customAnimation.to(this.human.rotation, 0.2, { z: this.human.rotation.z - 2 * Math.PI, delay: 0.12 });
+				var rotation = this.human.rotation.z;
+				_animation.customAnimation.to(this.human.rotation, 0.12, { z: this.human.rotation.z - Math.PI, onComplete: function onComplete() {
+						_this5.human.rotation.z = rotation - Math.PI;
+					} });
+				_animation.customAnimation.to(this.human.rotation, 0.2, { z: this.human.rotation.z - 2 * Math.PI, delay: 0.12, onComplete: function onComplete() {
+						_this5.human.rotation.z = rotation - 2 * Math.PI;
+					} });
 				_animation.customAnimation.to(this.head.position, 0.1, { y: this.head.position.y + 0.9 * scale, x: this.head.position.x + 0.45 * scale });
 				_animation.customAnimation.to(this.head.position, 0.1, { y: this.head.position.y - 0.9 * scale, x: this.head.position.x - 0.45 * scale, delay: 0.1 });
 				_animation.customAnimation.to(this.head.position, 0.15, { y: 4.725, x: 0, delay: 0.25 });
@@ -7642,6 +7697,8 @@ var WIDTH = window.innerHeight < window.innerWidth ? window.innerHeight : window
 
 var Ground = function () {
 	function Ground() {
+		var _this = this;
+
 		_classCallCheck(this, Ground);
 
 		/*var vertexShader = [
@@ -7672,11 +7729,12 @@ var Ground = function () {
   	exponent: {type: "f", value: 0.6 }
   }*/
 		this.obj = new THREE.Object3D();
+		this.obj.name = 'ground';
 		this.canvas = document.createElement('canvas');
 		this.context = this.canvas.getContext('2d');
 		this.canvas.width = 64;
 		this.canvas.height = 64;
-		var geometry = new THREE.PlaneGeometry(WIDTH / HEIGHT * _config.FRUSTUMSIZE, _config.FRUSTUMSIZE);
+		var geometry = new THREE.PlaneBufferGeometry(WIDTH / HEIGHT * _config.FRUSTUMSIZE, _config.FRUSTUMSIZE);
 		this.materials = [];
 		var colors = [['rgba(215, 219, 230, 1)', 'rgba(188, 190, 199, 1)'], ['rgba(255, 231, 220, 1)', 'rgba(255, 196, 204, 1)'], ['rgba(255, 224, 163, 1)', 'rgba(255, 202, 126, 1)'], ['rgba(255, 248, 185, 1)', 'rgba(255, 245, 139, 1)'], ['rgba(218, 244, 255, 1)', 'rgba(207, 233, 210, 1)'], ['rgba(219, 235, 255, 1)', 'rgba(185, 213, 235, 1)'], ['rgba(216, 218, 255, 1)', 'rgba(165, 176, 232, 1)'], ['rgba(207, 207, 207, 1)', 'rgba(199, 196, 201, 1)']];
 		var that = this;
@@ -7694,15 +7752,24 @@ var Ground = function () {
 					that.materials.push(material);
 					var ground = new THREE.Mesh(geometry, material);
 					ground.position.z = -(i + 1) * 0.1;
+					ground.name = i;
+					ground.updateMatrix();
+					ground.matrixAutoUpdate = false;
 					that.obj.add(ground);
+					//if ( i >= 1) ground.visible = false;
 				};
 			}(i), 1000 * i);
 		}
-
+		setTimeout(function () {
+			for (var i = 1; i < 7; ++i) {
+				_this.obj.children[i].visible = false;
+			}
+		}, 8000);
 		this.current = 0;
 		//this.obj.receiveShadow = true;
 		//this.obj.rotation.x = -Math.PI / 2 ;
 		//this.obj.rotation.z = -Math.PI / 3 ;
+		//this.obj.matrixAutoUpdate = false;
 	}
 
 	_createClass(Ground, [{
@@ -7726,9 +7793,16 @@ var Ground = function () {
 	}, {
 		key: 'changeColor',
 		value: function changeColor() {
+			var _this2 = this;
+
+			console.log("this.ovj", this.obj.children);
 			var next = this.current + 1 > 6 ? 0 : this.current + 1;
-			_animation.customAnimation.to(this.materials[this.current], 5, { opacity: 0 });
-			_animation.customAnimation.to(this.materials[next], 5, { opacity: 1 });
+			var current = this.current;
+			_animation.customAnimation.to(this.materials[this.current], 5, { opacity: 0, onComplete: function onComplete() {
+					_this2.obj.children[current].visible = false;
+				} });
+			this.obj.children[next].visible = true;
+			_animation.customAnimation.to(this.materials[next], 4, { opacity: 1 });
 			this.current = next;
 		}
 	}]);
@@ -8588,7 +8662,8 @@ var CANVASTYPE = { // 当前绘制的2D场景
 	'pk': 4,
 	'lookers': 5,
 	'gameOverNew': 6, //结算页显示新手引导
-	'gameOverHighest': 7 // 结算页达到排行榜最高 / 历史最高
+	'gameOverHighest': 7, // 结算页达到排行榜最高 / 历史最高
+	'beginner': 8 //新手引导页
 };
 var frustumSizeHeight = _config.FRUSTUMSIZE; // 动画的尺寸单位坐标高度
 var frustumSizeWidth = WIDTH / HEIGHT * frustumSizeHeight; // 动画的尺寸单位坐标高度
@@ -8659,19 +8734,21 @@ var Rank = function () {
 		}
 
 		// 接口测试：
+		// --- 新手指引
+		// this.showBeginnerPage();
 		// --- 排行榜:
 		// this.showFriendRankList({
 		//  	week_best_score : 333
 		// }); // 显示好友排行榜 
 		// this.showGroupRankList(); // 显示群排行 
 		// --- 结算页：
-		// this.showGameOverPage({
-		// 	score : 54, // 当局分数
-		// 	highest_score : 55, // 历史最高分
+		//this.showGameOverPage({
+		// 	score : 230, // 当局分数
+		// 	highest_score : 200, // 历史最高分
 		// 	start_time : 2511922923, // 起始时间的秒级时间戳
-		// 	week_best_score : 2, // 本周最高分
+		// 	week_best_score : 200, // 本周最高分
 		// 	game_cnt : 5
-		// });
+		//});
 
 		// --- 首页：
 		// this.showStartPage(); 
@@ -8766,17 +8843,27 @@ var Rank = function () {
 		key: 'showGameOverPage',
 		value: function showGameOverPage(opt) {
 			this.showState = true;
-			this.opt = opt || this.opt;
+			/*opt = {
+    	score : 600, // 当局分数
+    	highest_score : 400, // 历史最高分
+    	start_time : 2511922923, // 起始时间的秒级时间戳
+    	week_best_score : 399, // 本周最高分
+    	game_cnt : 5
+   }*/
 			opt = opt || {};
+			this.opt = opt || this.opt;
+
 			this._createPlane();
 
-			// 找出那个排行
+			// 找出那个排行 - 
 			this.myUserInfo = _storage2.default.getMyUserInfo() || { headimg: '', nickname: '', week_best_score: 0, score_info: [{ score: 0 }] // 更新用户信息
-			};this.myUserInfo.week_best_score = Math.max(opt.week_best_score, opt.score) || 0;
-			var friendRankList = _storage2.default.getFriendsScore();
+			};this.myUserInfo.last_week_best_score = opt.week_best_score;
+			this.myUserInfo.week_best_score = Math.max(opt.week_best_score, opt.score) || 0;
+			var friendRankList = _storage2.default.getFriendsScore() || [];
 			friendRankList.push(this.myUserInfo); // 把自己的最高分放进去
 			var rank_list = this._rerank(friendRankList);
 			this.myidx = rank_list.findIndex(this._findSelfIndex.bind(this)) + 1; // 找到自己的index
+			// 计算要显示的3个人
 			if (rank_list.length > 3 && this.myidx > rank_list.length - 3) {
 				// 后3个
 				this.opt.litelist = rank_list.slice(rank_list.length - 3, rank_list.length);
@@ -8791,27 +8878,40 @@ var Rank = function () {
 			}
 
 			// 超越了多少人
-			var userInfo = _storage2.default.getMyUserInfo();
-			userInfo.week_best_score = opt.score;
-			var friendRank1 = _storage2.default.getFriendsScore();
-			friendRank1.push(userInfo);
-			friendRank1 = this._rerank(friendRank1);
-			this.changlleIdx = friendRank1.findIndex(this._findSelfIndex.bind(this)) + 1; // 找到自己的index
-			this.changlleIdx = friendRank1.length - this.changlleIdx;
+			if (opt.score >= opt.highest_score || opt.score >= this.myUserInfo.last_week_best_score) {
+				// 达到历史最高分 或者 本周最高分， 计算 超越的人数
+				var userInfo = _storage2.default.getMyUserInfo() || { headimg: '', nickname: '', week_best_score: 0, score_info: [{ score: 0 }] };
+				userInfo.week_best_score = opt.score;
+				var friendRank1 = _storage2.default.getFriendsScore() || [];
+				this.changlleList = [];
+				for (var j = 0; j < friendRank1.length; j++) {
+					if (friendRank1[j].week_best_score < opt.score && friendRank1[j].week_best_score > this.myUserInfo.last_week_best_score) {
+						// 显示新超越的人数， 
+						this.changlleList.push(friendRank1[j]);
+					}
+				}
+			}
 			// 新手指引，走普通结算
-			if (opt.score < 5 && opt.game_cnt < 5) {
-				this.canvasType = CANVASTYPE['gameOver'];
-				this._drawGameOver();
-			} else if (opt.score >= opt.highest_score) {
-				// 达到历史最高分
+			/*if(opt.score < 5 && opt.game_cnt < 5){
+   	this.canvasType = CANVASTYPE['gameOver']
+   	this._drawGameOver();
+   } else */if (opt.score >= opt.highest_score) {
+				// 历史最高分
 				this.canvasType = CANVASTYPE['gameOverHighest'];
 				this.opt.type = 'history';
+				this.opt.msg = '历史最高分';
 				this._drawGameOverHighest(this.opt, 'history');
 			} else if (rank_list.length > 1 && opt.score >= rank_list[0].week_best_score) {
-				// 达到排行榜最高
+				// 达到排行榜冠军
 				this.canvasType = CANVASTYPE['gameOverHighest'];
 				this.opt.type = 'rank';
 				this._drawGameOverHighest(this.opt, 'rank');
+			} else if (opt.score >= this.myUserInfo.last_week_best_score) {
+				// 本周最高分
+				this.canvasType = CANVASTYPE['gameOverHighest'];
+				this.opt.type = 'history';
+				this.opt.msg = '本周最高分';
+				this._drawGameOverHighest(this.opt, 'history');
 			} else {
 				// 普通结算
 				this.canvasType = CANVASTYPE['gameOver'];
@@ -8850,6 +8950,14 @@ var Rank = function () {
 			this._drawLookers(opt);
 		}
 	}, {
+		key: 'showBeginnerPage',
+		value: function showBeginnerPage() {
+			this.showState = true;
+			this.canvasType = CANVASTYPE['beginner'];
+			this._createPlane();
+			this._drawBeginner();
+		}
+	}, {
 		key: 'hide2D',
 		value: function hide2D() {
 			if (DEBUG) return;
@@ -8858,6 +8966,23 @@ var Rank = function () {
 				if (!this.obj[planList[i]]) continue;
 				this.obj[planList[i]].visible = false;
 				this.options.camera.remove(this.obj[planList[i]]);
+			}
+		}
+	}, {
+		key: 'hide2DGradually',
+		value: function hide2DGradually() {
+			if (DEBUG) return;
+			var that = this;
+			for (var i = 0; i < planList.length; i++) {
+				if (!this.obj[planList[i]]) continue;
+				_animation.customAnimation.to(this.material[planList[i]], 1, { opacity: 0, onComplete: function (i) {
+						return function () {
+							that.material[planList[i]].opacity = 1;
+							that.obj[planList[i]].visible = false;
+							that.showState = false;
+							that.options.camera.remove(that.obj[planList[i]]);
+						};
+					}(i) });
 			}
 		}
 
@@ -8878,7 +9003,6 @@ var Rank = function () {
 			var pageY = e.changedTouches[0].pageY;
 			this.startX = pageX;
 			this.startY = pageY;
-
 			if (this.canvasType == CANVASTYPE['friendRank'] || this.canvasType == CANVASTYPE['groupRank'] || this.canvasType == CANVASTYPE['pk']) {
 				var touchInfo = this._touchInfo;
 				var listener = this.scrollHandler;
@@ -8947,10 +9071,11 @@ var Rank = function () {
 			var pageX = e.changedTouches[0].pageX;
 			var pageY = e.changedTouches[0].pageY;
 			var isClick = true;
-			if (Math.abs(pageX - this.startX) > 5 || Math.abs(pageY - this.startY) > 5) {
+			if ((this.canvasType == CANVASTYPE['friendRank'] || this.canvasType == CANVASTYPE['groupRank'] || this.canvasType == CANVASTYPE['pk']) && (Math.abs(pageX - this.startX) > 5 || Math.abs(pageY - this.startY) > 5)) {
 				// 不认为是一次 click
 				isClick = false;
 			}
+			console.log('vvvv --- touchend', pageX, pageY, this.startX, this.startY);
 			pageX = this._cxp(pageX);
 			pageY = this._cyp(pageY);
 
@@ -9044,7 +9169,6 @@ var Rank = function () {
 					return;
 				}
 			}
-
 			var touchInfo = this._touchInfo;
 			if (touchInfo.trackingID == -1) return;
 			e.preventDefault();
@@ -9150,6 +9274,9 @@ var Rank = function () {
 			ctx.clearRect(0, 0, WIDTH, 10 * this._cx(ListLineHeight));
 
 			ctx.fillStyle = 'rgba(0,0,0,0.9)';
+			if (this.canvasType == CANVASTYPE['pk']) {
+				ctx.fillStyle = 'white';
+			}
 			ctx.textBaseline = "middle";
 			ctx.fillRect(0, 0, WIDTH, 10 * this._cx(ListLineHeight)); //list 底色为白色
 			if (offset != 0 && list.length == 0) {
@@ -9163,10 +9290,13 @@ var Rank = function () {
 			}
 			var len = list.length;
 			for (var i = 0; i < len; i++) {
-				if (i % 2 == 1) {
-					ctx.fillStyle = 'rgba(255,255,255, 0.06)';
-					ctx.fillRect(0, i * this._cx(ListLineHeight), this._cx(414), this._cx(ListLineHeight));
+				if (this.canvasType != CANVASTYPE['pk']) {
+					if (i % 2 == 1) {
+						ctx.fillStyle = 'rgba(255,255,255, 0.03)';
+						ctx.fillRect(0, i * this._cx(ListLineHeight), this._cx(414), this._cx(ListLineHeight));
+					}
 				}
+
 				// 写一个大的数字
 				var y = i * this._cx(ListLineHeight) + this._cx(32); // 每一行中间的y值
 				ctx.textAlign = "center";
@@ -9526,7 +9656,6 @@ var Rank = function () {
 			ctx.fillRect(this._cx(30), 0, this._cx(354), this._cy(110)); // 上
 			ctx.fillRect(this._cx(30), this._cy(592), this._cx(354), this._cy(144)); // 下
 
-
 			ctx.textBaseline = "middle";
 			ctx.textAlign = "center";
 			if (this.canvasType == CANVASTYPE['groupRank']) {
@@ -9556,7 +9685,7 @@ var Rank = function () {
    ctx.fillRect(this._cx(30), this._cy(185), this._cx(354), this._cx(6)); // xy wh*/
 
 			ctx.fillStyle = 'rgba(0,0,0,0.9)';
-			ctx.fillRect(this._cx(30), this._cy(110), this._cx(354), this._cy(33));
+			ctx.fillRect(this._cx(30), this._cy(110), this._cx(354), this._cx(33));
 
 			// 列表有一条分界线
 			ctx.strokeStyle = 'rgba(255,255,255,0.2)';
@@ -9662,24 +9791,22 @@ var Rank = function () {
 			}
 
 			// 如果用户不会玩：总局数 < 5 且当前分数 < 5，显示新手指引
-			if (opt.game_cnt < 5 && opt.score < 5) {
-				ctx.lineWidth = 4 * Dpr;
-				ctx.strokeStyle = '#fff';
-				ctx.fillStyle = '#fff';
-				this._roundedRectR(this._cx(31), this._cy(298), this._cx(354), this._cx(210), 1 * Dpr, 'bg');
-				ctx.fill();
-
-				ctx.fillStyle = 'black';
-				ctx.font = this._cf(14);
-				ctx.textAlign = 'left';
-				ctx.fillText('长按屏幕并释放', this._cx(63), this._cy(340));
-				ctx.fillText('控制', this._cx(63), this._cy(365));
-				ctx.fillText('向前跳', this._cx(108), this._cy(365));
-				this._drawImageCenter('res/i.png', this._cx(100), this._cy(365), this._cx(9.8), this._cx(32), 'bg', null, that.imgid);
-
-				this._drawImageCenter('res/beginner.png', this._cx(241), this._cy(410), this._cx(193), this._cx(163), 'bg', null, that.imgid);
-				this.opt.type = 'beginner';
-			} else if (showTired) {
+			/*(opt.game_cnt < 5 && opt.score < 5){
+   	ctx.lineWidth = 4*Dpr;
+   	ctx.strokeStyle = '#fff';
+   	ctx.fillStyle = '#fff';
+   	this._roundedRectR(this._cx(31), this._cy(298), this._cx(354), this._cx(210), 1*Dpr, 'bg');
+   	ctx.fill();
+   		ctx.fillStyle = 'black';
+   	ctx.font = this._cf(14);
+   	ctx.textAlign = 'left';
+   	ctx.fillText('长按屏幕并释放', this._cx(63), this._cy(340));
+   	ctx.fillText('控制', this._cx(63), this._cy(365));
+   	ctx.fillText('向前跳', this._cx(108), this._cy(365));
+   	this._drawImageCenter('res/i.png', this._cx(100), this._cy(365), this._cx(9.8), this._cx(32), 'bg', null, that.imgid)
+   		this._drawImageCenter('res/beginner.png', this._cx(241), this._cy(410), this._cx(193), this._cx(163), 'bg', null, that.imgid)
+   	this.opt.type = 'beginner';
+   } else */if (showTired) {
 				// this._has_show_tired = true;
 				// 游戏时间超过30min
 				ctx.lineWidth = 4 * Dpr;
@@ -9714,8 +9841,7 @@ var Rank = function () {
 					ctx.textAlign = "center";
 					ctx.fillStyle = '#888';
 					ctx.fillText(opt.rankStart + i, this._cx(90 + 118 * i), this._cy(356));
-					ctx.font = this._cf(17);
-					ctx.fillStyle = '#fff';
+					ctx.font = this._cf(14);
 					if (opt.litelist[i].nickname.length > NameLength) {
 						opt.litelist[i].nickname = opt.litelist[i].nickname.substring(0, NameLength) + '...';
 					}
@@ -9745,7 +9871,7 @@ var Rank = function () {
 			// 历史最高分
 			ctx.font = this._cf(14);
 			ctx.textAlign = "center";
-			ctx.fillText('历史最高分：' + opt.highest_score, this._cx(207), this._cy(703));
+			ctx.fillText('历史最高分：' + Math.max(opt.highest_score, opt.score), this._cx(207), this._cy(703));
 
 			this._updatePlane('bg');
 		}
@@ -9863,30 +9989,107 @@ var Rank = function () {
 			ctx.fillStyle = 'rgba(0,0,0, 0.8)';
 			ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-			ctx.lineWidth = 2 * Dpr;
-			ctx.strokeStyle = '#fff';
-			ctx.fillStyle = '#fff';
-			this._roundedRectR(this._cx(30), this._cy(104), this._cx(354), this._cx(371), 1 * Dpr, 'bg');
-			ctx.fill();
-
-			// new
-			this._drawImageCenter('res/new.png', this._cx(207), this._cy(167), this._cx(58), this._cx(26), 'bg', null, this.imgid);
-
 			// 历史最高分
+			ctx.font = this._cf(14);
+			ctx.textAlign = "center";
+			ctx.fillStyle = '#888';
+			ctx.fillText('历史最高分：' + Math.max(opt.highest_score, opt.score), this._cx(207), this._cy(703));
+
+			// 历史最高分 / 本周最高分 / 各种称号
 			if (type == 'history') {
+				// 开始一坨称号的表演
+				var other_msg = '';
+				if (this.opt.msg == '历史最高分') {
+					if (this.opt.highest_score < 100 && this.opt.score >= 100) {
+						// 第一次达到100分
+						other_msg = '初窥门径';
+					} else if (this.opt.highest_score < 500 && this.opt.score >= 500) {
+						other_msg = '耐得寂寞';
+					} else if (this.opt.highest_score < 1000 && this.opt.score >= 1000) {
+						other_msg = '登堂入室';
+					} else if (this.opt.highest_score < 2000 && this.opt.score >= 2000) {
+						other_msg = '无聊大师';
+					} else if (this.opt.highest_score < 3000 && this.opt.score >= 3000) {
+						other_msg = '一指禅';
+					} else if (this.opt.highest_score < 5000 && this.opt.score >= 5000) {
+						other_msg = '立地成佛';
+					}
+					// 结束一坨称号的表演
+				}
+				if (!!other_msg) {
+					ctx.fillStyle = 'red';
+					ctx.strokeStyle = 'red';
+					ctx.lineWidth = 1 * Dpr;
+					// ctx.fillRect( this._cx(163), this._cy(154), this._cx(88), this._cx(26) );
+					this._roundedRectR(this._cx(163), this._cy(154), this._cx(88), this._cx(26), 2 * Dpr, 'bg');
+					ctx.fill();
+					ctx.fillStyle = 'white';
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.font = 'bold ' + this._cf(14);
+					ctx.fillText(other_msg, this._cx(207), this._cy(167));
+				} else this._drawImageCenter('res/new.png', this._cx(207), this._cy(167), this._cx(58), this._cx(26), 'bg', null, this.imgid);
+
 				ctx.font = this._cf(14);
 				ctx.textAlign = "center";
-				ctx.fillStyle = '#000';
+				ctx.fillStyle = '#fff';
 				ctx.textBaseline = 'middle';
-				ctx.fillText('历史最高分', this._cx(207), this._cy(224));
+
+				ctx.fillText(this.opt.msg || '本周最高分', this._cx(207), this._cy(224));
 
 				ctx.font = this._cf(86, true);
 				ctx.fillStyle = '#00c777';
 				ctx.fillText(opt.score, this._cx(207), this._cy(292.5));
+
+				if (this.changlleList.length == 0) {
+					// 没有超越好友
+					ctx.lineWidth = 2 * Dpr;
+					ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+					ctx.fillStyle = 'rgba(0,0,0,0.1)';
+					this._roundedRectR(this._cx(30), this._cy(104), this._cx(354), this._cx(371), 1 * Dpr, 'bg');
+					ctx.fill();
+				} else {
+					// 有超越的好友
+					ctx.lineWidth = 2 * Dpr;
+					ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+					ctx.fillStyle = 'rgba(0,0,0,0.1)';
+					this._roundedRectR(this._cx(30), this._cy(104), this._cx(354), this._cx(401), 1 * Dpr, 'bg');
+					ctx.fill();
+					// 线
+					ctx.lineWidth = 0.5 * Dpr;
+					ctx.strokeStyle = '#fff';
+					ctx.beginPath();
+					ctx.moveTo(this._cx(127), this._cy(406));
+					ctx.lineTo(this._cx(287), this._cy(406));
+					ctx.stroke();
+					ctx.closePath();
+
+					ctx.font = this._cf(14);
+					ctx.fillStyle = '#fff';
+					ctx.fillText('排名超越' + this.changlleList.length + '位好友', this._cx(207), this._cy(429));
+
+					// 好友头像
+					var show_ava_list = this.changlleList.slice(0, 7);
+					var n = show_ava_list.length,
+					    w = 32,
+					    p = 10;
+					var startx = 207 - (n * 32 + (n - 1) * 10) / 2;
+					for (var i = 0; i < n; i++) {
+						this._drawImageCenter(show_ava_list[i].headimg, this._cx(startx + w / 2 + i * (w + p)), this._cy(469), this._cx(w), this._cx(w), 'bg', null, this.imgid);
+					}
+				}
 			}
 
 			// 排行榜最高分
 			if (type == 'rank') {
+				this._drawImageCenter('res/new.png', this._cx(207), this._cy(167), this._cx(58), this._cx(26), 'bg', null, this.imgid);
+
+				ctx.lineWidth = 2 * Dpr;
+				ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+				ctx.fillStyle = 'rgba(0,0,0,0.1)';
+				this._roundedRectR(this._cx(30), this._cy(104), this._cx(354), this._cx(371), 1 * Dpr, 'bg');
+				ctx.fill();
+
 				var that = this;
 				this._drawImageCenter(this.myUserInfo.headimg, this._cx(207), this._cy(291), this._cx(56), this._cx(56), 'bg', function () {
 					that._drawImageCenter('res/gold.png', that._cx(207), that._cy(253), that._cx(40), that._cx(40), 'bg', null, that.imgid);
@@ -9894,17 +10097,24 @@ var Rank = function () {
 
 				ctx.font = this._cf(14);
 				ctx.textAlign = "center";
-				ctx.fillStyle = '#000';
+				ctx.fillStyle = '#fff';
 				ctx.textBaseline = 'middle';
-				ctx.fillText('好友排行榜第一', this._cx(207), this._cy(224));
+				ctx.fillText('排行榜冠军', this._cx(207), this._cy(224));
 
 				ctx.font = this._cf(40, true);
 				ctx.fillStyle = '#00c777';
 				ctx.fillText(opt.score, this._cx(207), this._cy(349));
+
+				// 分享
+				this._drawImageCenter('res/pure_share.png', this._cx(207), this._cy(415), this._cx(18), this._cx(24), 'bg', null, this.imgid);
 			}
 
-			// 分享
-			this._drawImageCenter('res/pure_share.png', this._cx(207), this._cy(415), this._cx(18), this._cx(24), 'bg', null, this.imgid);
+			// title的小方块
+			/*ctx.fillStyle = 'rgba(255,255,255,0.2)';
+   ctx.fillRect( this._cx(155), this._cy(220), this._cx(9), this._cx(3));
+   ctx.fillRect( this._cx(155), this._cy(226), this._cx(9), this._cx(3));
+   ctx.fillRect( this._cx(248), this._cy(220), this._cx(9), this._cx(3));
+   ctx.fillRect( this._cx(248), this._cy(226), this._cx(9), this._cx(3));*/
 
 			// 关闭 - 回到正常结算页
 			this._drawImageCenter('res/close.png', this._cx(375), this._cy(112), this._cx(43), this._cx(43), 'bg', null, this.imgid);
@@ -9924,6 +10134,30 @@ var Rank = function () {
    	that.explode(7, 9, 2);// 烟花动画
    	that.explode(0, 2, 3);// 烟花动画
    }, 3000)*/
+			this._updatePlane('bg');
+		}
+	}, {
+		key: '_drawBeginner',
+		value: function _drawBeginner() {
+			var ctx = this.context['bg'];
+			ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+			ctx.fillStyle = 'rgba(255,255,255,0.3)';
+			ctx.fillRect(this._cx(103), this._cy(134), this._cx(206), this._cx(115));
+
+			ctx.fillStyle = 'black';
+			ctx.textBaseline = 'middle';
+			ctx.textAlign = 'center';
+			ctx.font = this._cf(17);
+			ctx.fillText('长按屏幕并释放', this._cx(207), this._cy(172));
+
+			ctx.textAlign = 'left';
+			ctx.fillText('控制', this._cx(149), this._cy(213));
+
+			ctx.textAlign = 'right';
+			ctx.fillText('向前跳', this._cx(265), this._cy(213));
+
+			this._drawImageCenter('res/i.png', this._cx(198), this._cy(211), this._cx(13.2), this._cx(35.6), 'bg', null, this.imgid);
 
 			this._updatePlane('bg');
 		}
@@ -10119,7 +10353,7 @@ var Rank = function () {
 					!!cb && cb();
 					that._updatePlane(type); // 更新画布
 				} else {
-					console.log('出现了时序错误!!!');
+					console.log(that.imgid, imgid, type, '出现了时序错误!!!');
 				}
 				// 切到了其他场景，自然cb也就不需要了
 			};
@@ -10852,7 +11086,7 @@ var TailSystem = function () {
     value: function init() {
       var width = cellTailConfig.width;
       var height = cellTailConfig.height;
-      this.geometry = new THREE.PlaneGeometry(width, height);
+      this.geometry = new THREE.PlaneBufferGeometry(width, height);
       this.material = new THREE.MeshBasicMaterial({
         color: 0xffffff,
         side: THREE.DoubleSide,
@@ -11004,6 +11238,7 @@ var CellTail = function () {
     this.tickTime = 0;
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.visible = false;
+    this.mesh.name = 'tail';
   }
 
   _createClass(CellTail, [{
@@ -11065,7 +11300,7 @@ var UI = function () {
 		this.score = 0;
 		this.double = 1;
 
-		var observeGeometry = new THREE.PlaneGeometry(_config.FRUSTUMSIZE * ASPECT * 0.034, _config.FRUSTUMSIZE * 0.023);
+		var observeGeometry = new THREE.PlaneBufferGeometry(_config.FRUSTUMSIZE * ASPECT * 0.034, _config.FRUSTUMSIZE * ASPECT * 0.034 / 42 * 48);
 		var observeMaterial = new THREE.MeshBasicMaterial({
 			map: _config.loader.load('res/observShare.png'),
 			transparent: true
@@ -11078,12 +11313,15 @@ var UI = function () {
 		// observeBg.position.set(-1.1, -1.8, 0)
 		this.observe = new THREE.Mesh(observeGeometry, observeMaterial);
 		var res = wx.getSystemInfoSync();
-		if (res.screenHeight > 812) {
-			this.observe.position.set(-_config.FRUSTUMSIZE * ASPECT * 0.385, -_config.FRUSTUMSIZE * 0.464, -1);
+		var sys = res.system.toLowerCase();
+		if (res.screenHeight >= 812 && sys.indexOf('ios') > -1) {
+			this.observe.position.set(-_config.FRUSTUMSIZE * ASPECT * 0.38, -_config.FRUSTUMSIZE * 0.464, -1);
 		} else {
 			this.observe.position.set(-_config.FRUSTUMSIZE * ASPECT * 0.435, -_config.FRUSTUMSIZE * 0.464, -1);
 		}
 		// this.observe.position.set(-FRUSTUMSIZE / 2 * ASPECT, -FRUSTUMSIZE / 2, -1)
+		this.observe.updateMatrix();
+		this.observe.matrixAutoUpdate = false;
 		this.observe.visible = false;
 
 		// this.observe.add(observeBg)
@@ -11092,31 +11330,24 @@ var UI = function () {
 		//this.createSky();
 		this.scoreText = new _text2.default('0', { fillStyle: 0x252525, sumScore: true });
 		this.scoreText.obj.position.set(0, 21, -10);
+		this.scoreText.obj.updateMatrix();
+		this.scoreText.obj.matrixAutoUpdate = false;
 		this.camera.add(this.scoreText.obj);
 		this.quickText = new _text2.default('好快！', { fillStyle: 0x252525, chinese: true });
 		this.quickText.obj.position.set(-13, 18, -10);
-		this.quickText.material.opacity = 0;
+		this.quickText.obj.updateMatrix();
+		this.quickText.obj.matrixAutoUpdate = false;
+		this.quickText.obj.visible = false;
 		this.perfectText = new _text2.default('很好！', { fillStyle: 0x252525, chinese: true });
 		this.perfectText.obj.position.set(-13, 16, -10);
-		this.perfectText.material.opacity = 0;
+		this.perfectText.obj.updateMatrix();
+		this.perfectText.obj.matrixAutoUpdate = false;
+		this.perfectText.obj.visible = false;
 		this.camera.add(this.quickText.obj);
 		this.camera.add(this.perfectText.obj);
 	}
 
 	_createClass(UI, [{
-		key: 'createSky',
-		value: function createSky() {
-			var geometry = new THREE.PlaneGeometry(34, 17);
-			var material = new THREE.MeshBasicMaterial({
-				transparent: true,
-				map: _config.loader.load('res/mountain.png')
-			});
-			var moon = new THREE.Mesh(geometry, material);
-			moon.position.z = -30;
-			moon.position.y = 19;
-			this.camera.add(moon);
-		}
-	}, {
 		key: 'reset',
 		value: function reset() {
 			this.setScore(0);
@@ -11127,8 +11358,8 @@ var UI = function () {
 			//this.bgAudio.play();
 			this.score = 0;
 			this.double = 1;
-			this.perfectText.material.opacity = 0;
-			this.quickText.material.opacity = 0;
+			this.perfectText.obj.visible = false;
+			this.quickText.obj.visible = false;
 		}
 	}, {
 		key: 'update',
@@ -11149,6 +11380,8 @@ var UI = function () {
 	}, {
 		key: 'addScore',
 		value: function addScore(score, double, quick) {
+			var _this = this;
+
 			if (double) {
 				if (this.double === 1) this.double = 2;else this.double += 2;
 			} else {
@@ -11167,8 +11400,11 @@ var UI = function () {
 				//TweenMax.to(this.perfectText.obj.scale, 0.4, { x: 0.8, y: 0.8, z: 0.8  });
 				var text = ['太棒了！', '很好！', '稳住！'];
 				//this.perfectText.setText(text[Math.floor(Math.random() * 3)]);
+				this.perfectText.obj.visible = true;
 				_animation.customAnimation.to(this.perfectText.material, 0.4, { opacity: 1 });
-				_animation.customAnimation.to(this.perfectText.material, 0.4, { opacity: 0, delay: 0.6 });
+				_animation.customAnimation.to(this.perfectText.material, 0.4, { opacity: 0, delay: 0.6, onComplete: function onComplete() {
+						_this.perfectText.obj.visible = false;
+					} });
 				if (double && !quick) this.perfectText.obj.position.y = 18;else this.perfectText.obj.position.y = 16;
 			}
 			if (quick && showToast && this.game.mode != 'observe') {
@@ -11176,8 +11412,11 @@ var UI = function () {
 				//TweenMax.to(this.quickText.obj.scale, 0.4, { x: 0.8, y: 0.8, z: 0.8 });
 				var text = ['好快！', '给力！'];
 				//this.quickText.setText(text[Math.floor(Math.random() * 2)]);
+				this.quickText.obj.visible = true;
 				_animation.customAnimation.to(this.quickText.material, 0.4, { opacity: 1 });
-				_animation.customAnimation.to(this.quickText.material, 0.4, { opacity: 0, delay: 0.6 });
+				_animation.customAnimation.to(this.quickText.material, 0.4, { opacity: 0, delay: 0.6, onComplete: function onComplete() {
+						_this.quickText.obj.visible = false;
+					} });
 			}
 		}
 	}, {
@@ -11187,11 +11426,11 @@ var UI = function () {
 			this.scoreText.setScore(score);
 			_config.BLOCK.minRadiusScale -= 0.005;
 			//console.log("BBB", BLOCK.minRadiusScale, BLOCK.maxRadiusScale)
-			_config.BLOCK.minRadiusScale = Math.max(0.3, _config.BLOCK.minRadiusScale);
+			_config.BLOCK.minRadiusScale = Math.max(0.25, _config.BLOCK.minRadiusScale);
 			_config.BLOCK.maxRadiusScale -= 0.005;
 			_config.BLOCK.maxRadiusScale = Math.max(_config.BLOCK.maxRadiusScale, 0.6);
 			_config.BLOCK.maxDistance += 0.03;
-			_config.BLOCK.maxDistance = Math.min(23, _config.BLOCK.maxDistance);
+			_config.BLOCK.maxDistance = Math.min(22, _config.BLOCK.maxDistance);
 		}
 	}]);
 
@@ -11444,7 +11683,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var geometry = new THREE.RingGeometry(_config.WAVE.innerRadius, _config.WAVE.outerRadius, _config.WAVE.thetaSeg);
+var geometry = new THREE.RingBufferGeometry(_config.WAVE.innerRadius, _config.WAVE.outerRadius, _config.WAVE.thetaSeg);
 var material = new THREE.MeshBasicMaterial({ color: _config.COLORS.pureWhite, transparent: true });
 
 var Wave = function () {
@@ -11453,6 +11692,7 @@ var Wave = function () {
 
 		this.obj = new THREE.Mesh(geometry, material);
 		this.obj.rotation.x = -Math.PI / 2;
+		this.obj.name = 'wave';
 		//this.obj.visible = false;
 	}
 
@@ -13774,8 +14014,8 @@ var ModeCtrl = function () {
       switch (mode) {
         case 'single':
           this.singleCtrl.init(options);
-          this.gameCtrl.netWorkLogin();
           this.currentCtrl = this.singleCtrl;
+          this.gameCtrl.netWorkLogin();
           break;
         case 'groupShare':
           this.groupShareCtrl.init(options);
@@ -13791,6 +14031,10 @@ var ModeCtrl = function () {
           break;
 
         default:
+          this.model.setMode('single');
+          this.singleCtrl.init(options);
+          this.gameCtrl.netWorkLogin();
+          this.currentCtrl = this.singleCtrl;
           console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!');
           console.log('InitFirstPage 找不到对应mode');
           console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!');
@@ -14390,7 +14634,9 @@ var ObserveCtrl = function () {
     }
   }, {
     key: 'wxOnshow',
-    value: function wxOnshow() {}
+    value: function wxOnshow() {
+      return;
+    }
   }]);
 
   return ObserveCtrl;
@@ -14771,6 +15017,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+//window.console = { log: function() {}, error: function() {}, warn: function() {} };
 var HEIGHT = window.innerHeight > window.innerWidth ? window.innerHeight : window.innerWidth;
 var WIDTH = window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth;
 var TIMEOUT = 9000;
@@ -14864,17 +15111,18 @@ var Game = function () {
             this.obj.position.z = value;
           }.bind(this.blocks[0]));
         }
-        if (this.tailSystem) {
-          for (var i = 0; i < this.tailSystem.tailsUsingPool.length; ++i) {
-            (0, _animation.TweenAnimation)(this.tailSystem.tailsUsingPool[i].mesh.position.x, this.tailSystem.tailsUsingPool[i].mesh.position.x - vector.x, duration * 500, 'Linear', function (value) {
-              this.mesh.position.x = value;
-            }.bind(this.tailSystem.tailsUsingPool[i]));
+        // if (this.tailSystem) {
+        //   for (var i = 0; i < this.tailSystem.tailsUsingPool.length; ++i) {
+        //     TweenAnimation(this.tailSystem.tailsUsingPool[i].mesh.position.x, this.tailSystem.tailsUsingPool[i].mesh.position.x - vector.x, duration * 500, 'Linear', function (value) {
+        //       this.mesh.position.x = value
+        //     }.bind(this.tailSystem.tailsUsingPool[i]))
 
-            (0, _animation.TweenAnimation)(this.tailSystem.tailsUsingPool[i].mesh.position.z, this.tailSystem.tailsUsingPool[i].mesh.position.z - vector.z, duration * 500, 'Linear', function (value) {
-              this.mesh.position.z = value;
-            }.bind(this.tailSystem.tailsUsingPool[i]));
-          }
-        }
+        //     TweenAnimation(this.tailSystem.tailsUsingPool[i].mesh.position.z, this.tailSystem.tailsUsingPool[i].mesh.position.z - vector.z, duration * 500, 'Linear', function (value) {
+        //       this.mesh.position.z = value
+        //     }.bind(this.tailSystem.tailsUsingPool[i]))
+        //   }
+
+        // }
         // TweenMax.to(this.bottle.obj.position, duration, { ease: Power3.easeOut, x: this.bottle.obj.position.x - vector.x, z: this.bottle.obj.position.z - vector.z });
         // for (var i = 0, len = this.blocksInUse.length; i < len; ++i) {
         //   TweenMax.to(this.blocksInUse[i].obj.position, duration, { ease: Power3.easeOut, x: this.blocksInUse[i].obj.position.x - vector.x, z: this.blocksInUse[i].obj.position.z - vector.z });
@@ -15023,6 +15271,7 @@ var Game = function () {
           this.currentScore = this.UI.score;
           this.gameCtrl.gameOver(this.currentScore);
           this.deadTimeout = setTimeout(function () {
+            _animation.TweenAnimation.killAll();
             _this.gameCtrl.gameOverShowPage();
             _this.pendingReset = false;
             if (_this.mode == 'observe') {
@@ -15044,15 +15293,19 @@ var Game = function () {
 
       ++this.succeedTime;
       this.lastSucceedTime = Date.now();
-      if (this.succeedTime % 10 == 0) {
+      if (this.succeedTime % 15 == 0) {
         this.ground.changeColor();
       }
-      var firstV = this.nextBlock.obj.position.clone().sub(this.currentBlock.obj.position.clone());
+      var firstV = this.nextBlock.obj.position.clone().sub(this.currentBlock.obj.position);
       this.bottle.obj.position.x = this.bottle.destination[0];
       this.bottle.obj.position.z = this.bottle.destination[1];
       this.bottle.squeeze();
       var block = this.thirdBlock;
       if (this.firstAnimating) return;
+      if (this.guider) {
+        this.guider = false;
+        this.full2D.hide2DGradually();
+      }
       if (this.animating) {} else {
         if (this.nextBlock.order == 15) {
           this.nextBlock.glow();
@@ -15110,7 +15363,7 @@ var Game = function () {
         this.audioManager['pop'].play();
       }
       block.popup();
-      var secondV = block.obj.position.clone().sub(this.nextBlock.obj.position.clone());
+      var secondV = block.obj.position.clone().sub(this.nextBlock.obj.position);
       var cameraV = firstV.add(secondV);
       cameraV.x /= 2;
       cameraV.z /= 2;
@@ -15120,7 +15373,7 @@ var Game = function () {
       this.nextBlock = block;
 
       var duration = cameraV.length() / 10;
-      this.bottle.scatterParticles();
+      if (_config.GAME.canShadow) this.bottle.scatterParticles();
       this.moveGradually(cameraV, duration);
       this.bottle.human.rotation.z = 0;
       this.bottle.human.rotation.x = 0;
@@ -15152,11 +15405,11 @@ var Game = function () {
       if (!fb && !this.options.query.mode) {
         this.guider = true;
       }
-      console.log('this.guider!!!!!', this.guider);
       this.gameCtrl = new _gameCtrl2.default(this);
       this.gameView = new _gameView2.default(this);
       this.gameModel = new _gameModel2.default(this);
       this.instructionCtrl = new _instructionCtrl2.default(this);
+
       /**
        * 历史玩过的次数
        */
@@ -15181,7 +15434,7 @@ var Game = function () {
 
       var frustumSize = _config.FRUSTUMSIZE;
       var aspect = WIDTH / HEIGHT;
-      this.camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, -10, 90);
+      this.camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, -10, 85);
       this.camera.position.set(-17, 30, 26);
       this.camera.lookAt(new THREE.Vector3(13, 0, -4));
       this.scene.add(this.camera);
@@ -15204,10 +15457,12 @@ var Game = function () {
       this.doubleHit = 0;
       if (isIPhone && (model.indexOf('iPhone 4') >= 0 || model.indexOf('iPhone 5') >= 0 || system.system.indexOf('iOS 9') >= 0 || system.system.indexOf('iOS 8') >= 0)) {
         this.renderer.shadowMap.enabled = false;
+        _config.GAME.canShadow = false;
         this.renderer.setPixelRatio(1.5);
         //wx.setPreferredFramesPerSecond && wx.setPreferredFramesPerSecond(45); 
       } else {
         if (typeof system.benchmarkLevel != 'undefined' && system.benchmarkLevel < 8 && system.benchmarkLevel != -1) {
+          _config.GAME.canShadow = false;
           this.renderer.shadowMap.enabled = false;
           this.renderer.setPixelRatio(window.devicePixelRatio ? isIPhone ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio : 1);
         } else {
@@ -15225,7 +15480,9 @@ var Game = function () {
       // ground.position.y = GAME.BOTTOMBOUND;
       // ground.receiveShadow = true;
       this.ground = new _ground2.default();
-      this.ground.obj.position.z = -89;
+      this.ground.obj.position.z = -84;
+      //this.ground.obj.rotation.x = -0.8;
+      // window.rrr = this.ground.obj.position;
 
       this.camera.add(this.ground.obj);
 
@@ -15238,12 +15495,14 @@ var Game = function () {
       }
       var basicMaterial = new THREE.MeshBasicMaterial({ color: 0xF5F5F5 });
       this.combo = new THREE.Mesh(new THREE.CircleGeometry(0.6, 40), basicMaterial);
+      this.combo.name = 'combo';
       this.combo.position.x = -50;
       this.combo.rotation.x = -Math.PI / 2;
       this.scene.add(this.combo);
 
       this.shadowTarget = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 0.1), basicMaterial);
       this.shadowTarget.visible = false;
+      this.shadowTarget.name = 'shadowTarget';
       this.scene.add(this.shadowTarget);
       this.currentBlock = new _block2.default(0);
 
@@ -15278,6 +15537,7 @@ var Game = function () {
       for (var i = 2; i < 30; ++i) {
         var block = new _block2.default(i);
         this.blocksPool.push(block);
+        //this.scene.add(block.obj);
       }
 
       this.full2D = new _full2D2.default({
@@ -15344,7 +15604,7 @@ var Game = function () {
       */
       wx.onShow(this.handleWxOnShowEvent.bind(this));
       wx.onHide(this.handleWxOnHideEvent.bind(this));
-      var serverRation = _session2.default.serverConfig.bad_js_ratio == undefined ? 1000000 : _session2.default.serverConfig.bad_js_ratio;
+      wx.onError(this.handleWxOnError.bind(this));
       wx.onAudioInterruptionBegin && wx.onAudioInterruptionBegin(this.handleInterrupt.bind(this));
 
       this.gameCtrl.firstInitGame(this.options);
@@ -15408,13 +15668,20 @@ var Game = function () {
         for (var i = 1, len = _this5.blocks.length; i < len; ++i) {
           _animation.customAnimation.to(_this5.blocks[i].obj.position, 0.5, { z: i % 2 == 0 ? 60 : -60, delay: i * 0.1 + 2.2 });
         }
-        if (_this5.guider) _animation.customAnimation.to(_this5.currentBlock.obj.position, 0.5, { z: -60, delay: 2.1 });
+        if (_this5.guider) {
+          _animation.customAnimation.to(_this5.currentBlock.obj.position, 0.5, { z: -60, delay: 2.1 });
+          var currentBlock = _this5.currentBlock;
+          setTimeout(function () {
+            currentBlock.obj.visible = false;
+          }, 3000);
+        }
         _this5.currentBlock = _this5.blocks[0];
         setTimeout(function () {
           if (!(that.mode == 'single' && (that.stage == 'startPage' || that.stage == 'friendRankList')) && !that.guider) return;
           if (that.guider) {
             _this5.nextBlock.change(null, null, 1);
             _this5.nextBlock.obj.position.x = 33;
+            _this5.full2D.showBeginnerPage();
           }
           _this5.nextBlock.popup();
           _this5.nextBlock.greenMaterial.color.setHex(0x5d5d5d);
@@ -15487,6 +15754,8 @@ var Game = function () {
     value: function replayGame(seed) {
       this.currentScore = 0;
       this.gameCtrl.onReplayGame();
+      this.audioManager.restart.seek(0);
+      this.audioManager.restart.play();
       if (this.guider) {
         if (this.guiderTimer) {
           clearInterval(this.guiderTimer);
@@ -15498,8 +15767,6 @@ var Game = function () {
       } else {
         // 播放重新开始音效
         this.resetScene(seed);
-        this.audioManager.restart.seek(0);
-        this.audioManager.restart.play();
         this.bottle.showup();
       }
     }
@@ -15553,7 +15820,7 @@ var Game = function () {
         this.shadowLight.shadow.camera.bottom = -10;
         this.shadowLight.shadow.mapSize.width = 512;
         this.shadowLight.shadow.mapSize.height = 512;
-        var shadowGeometry = new THREE.PlaneGeometry(70, 30);
+        var shadowGeometry = new THREE.PlaneGeometry(65, 25);
         this.shadowGround = new THREE.Mesh(shadowGeometry, new THREE.ShadowMaterial({ transparent: true, color: 0x000000, opacity: 0.3 }));
         this.shadowGround.receiveShadow = true;
         //this.shadowGround.position.z = 0;
@@ -15625,7 +15892,13 @@ var Game = function () {
     key: 'generateNextBlock',
     value: function generateNextBlock() {
       var block;
-      if (this.blocksInUse.length >= 8) {
+      var interval = 5;
+      if (this.UI.score > 1000) {
+        interval = 6;
+      } else if (this.succeedTime > 3000) {
+        interval = 7;
+      }
+      if (this.blocksInUse.length >= 7) {
         var temp = this.blocksInUse.shift();
         temp.obj.visible = false;
         this.blocksPool.push(temp);
@@ -15634,7 +15907,7 @@ var Game = function () {
         return (0, _random.random)() > 0.5;
       });
       for (var i = 0, len = this.blocksPool.length; i < len; ++i) {
-        if (this.succeedTime - this.lastAddBonus >= 5 && this.blocksPool[i].order >= 13 || this.succeedTime - this.lastAddBonus < 5 && this.blocksPool[i].order < 13) {
+        if (this.succeedTime - this.lastAddBonus >= interval && this.blocksPool[i].order >= 13 || this.succeedTime - this.lastAddBonus < interval && this.blocksPool[i].order < 13) {
           block = this.blocksPool[i];
           if (block.order >= 13) {
             if (this.lastBonusOrder && this.lastBonusOrder == block.order || this.UI.score < 100 && block.order == 29) {
@@ -15892,6 +16165,17 @@ var Game = function () {
         that.instructionCtrl.icTimeout = setTimeout(function () {
           that.audioManager.scale_intro.stop();
           that.audioManager.scale_loop.stop();
+          if (that.currentBlock.order == 19) {
+            that.audioManager.sing.stop();
+            that.currentBlock.stopMusic();
+            that.audioManager.clearTimer();
+          } else if (that.currentBlock.order == 24) {
+            that.audioManager.store.stop();
+            that.audioManager.clearTimer();
+            that.currentBlock.closeDoor();
+          } else if (that.currentBlock.order == 15) {
+            that.currentBlock.hideGlow();
+          }
           that.currentBlock.rebound();
           that.camera.position.set(caPos.x, caPos.y, caPos.z);
           that.ground.obj.position.set(gdPos.x, gdPos.y, gdPos.z);
@@ -15922,7 +16206,7 @@ var Game = function () {
       });
 
       canvas.addEventListener('touchstart', function (e) {
-        //console.log(that.stage, that.mode)
+        // console.log(that.stage, that.mode)
         // console.log("touchstart");
         // that.full2D.doTouchStartEvent(e); return;
         /**
@@ -15945,6 +16229,12 @@ var Game = function () {
           that.full2D.doTouchStartEvent(e);
           return;
         }
+
+        if (that.stage == 'viewerWaiting' || that.stage == 'viewerGG' || that.stage == 'viewerOut') {
+          that.full2D.doTouchEndEvent(e);
+          return;
+        }
+
         if (that.stage == 'game') {
           if (that.mode === 'observe') return;
           //that.audioManager.scale_loop.stop()
@@ -15977,6 +16267,7 @@ var Game = function () {
       });
 
       var touchEnd = function touchEnd(e) {
+        // console.log(that.stage, that.mode)
         // that.full2D.doTouchEndEvent(e); return;
         var x = e.changedTouches[0].clientX;
         var y = e.changedTouches[0].clientY;
@@ -16145,7 +16436,6 @@ var Game = function () {
       var ratio = serverRation / 1000000 || 1;
       // var ratio = 1;
       if (Math.random() <= ratio) {
-        console.log('error', error);
         _network2.default.badReport(error.message, error.stack);
       }
     }
